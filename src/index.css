@@ -1,0 +1,23 @@
+.mainContainer{
+	background-color: black;
+}
+.background {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+  }
+  
+  .animation {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-image: url("./assets/purple.jpg");
+	background-repeat: no-repeat;
+	background-size: cover;
+	mix-blend-mode: screen;
+	opacity: 0.5;
+  }
