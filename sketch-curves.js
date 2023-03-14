@@ -22,11 +22,15 @@ const sketch = ({ width, height }) => {
 
   const points = [];
 
-  let x, y;
+  let x, y, n;
 
   for (let i = 0; i < numCells; i++) {
     x = (i % cols) * cw;
     y = Math.floor(i / cols) * ch;
+
+    n = random.noise2D(x, y);
+    x += n;
+    y += n;
 
     points.push(new Point({ x, y }));
   }
