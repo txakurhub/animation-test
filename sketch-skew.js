@@ -8,20 +8,17 @@ const seed = random.getRandomSeed();
 
 const settings = {
   dimensions: [1080, 1080],
-  //   animate: true,
+  animate: true,
   //   name: `seed ${seed}`,
 };
 
 const sketch = ({ context, width, height }) => {
   random.setSeed(seed);
-  console.log(random.value());
-  console.log(random.value());
-  console.log(random.value());
 
-  let x, y, w, h, fill, stroke, blend;
+  let x, y, w, h, fill, stroke, blend, n;
 
-  const num = 40;
-  const degrees = -30;
+  const num = 200;
+  const degrees = -20;
 
   const rects = [];
 
@@ -35,6 +32,10 @@ const sketch = ({ context, width, height }) => {
     y: height * 0.58,
   };
 
+  let frecuency = 0.0002;
+  let amplitude = 10;
+  const numFrames = 100;
+
   for (let i = 0; i < num; i++) {
     x = random.range(0, width);
     y = random.range(0, height);
@@ -45,11 +46,11 @@ const sketch = ({ context, width, height }) => {
     stroke = random.pick(rectColors).hex;
 
     blend = random.value() > 0.5 ? "overlay" : "source-over";
-
+    n = random.noise2D(x, y, frecuency, amplitude);
     rects.push({ x, y, w, h, fill, stroke, blend });
   }
 
-  return ({ context, width, height }) => {
+  return ({ context, width, height, frame }) => {
     context.fillStyle = bgColor;
     context.fillRect(0, 0, width, height);
 
@@ -68,10 +69,36 @@ const sketch = ({ context, width, height }) => {
       context.translate(-mask.x, -mask.y);
       context.translate(x, y);
 
+      rect.x = x + frame / 36; // Actualizar la posición horizontal de cada rectángulo
+
       context.strokeStyle = stroke;
       context.fillStyle = fill;
       context.lineWidth = 10;
 
+      // // actualizar offset
+      // offset += n * 3;
+
+      // // update positions
+      // rects.forEach((rect) => {
+      //   n = random.noise2D(rect.x + frame * 3, rect.y, frecuency, amplitude);
+      //   rect.x = rect.x + n;
+      //   rect.y = rect.y + n;
+      // });
+      const loopedFrame = frame % numFrames;
+      if (loopedFrame === 0) {
+        rect.x = random.range(0, width);
+        rect.y = random.range(0, height);
+      }
+      n = random.noise2D(
+        rect.x + loopedFrame * 3,
+        rect.y,
+        frecuency,
+        amplitude
+      );
+      rect.x = rect.x + n;
+      rect.y = rect.y + n;
+
+    
       context.globalCompositeOperation = blend;
 
       drawSkewedRect({ context, w, h, degrees });
