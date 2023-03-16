@@ -17,7 +17,7 @@ const sketch = ({ context, width, height }) => {
 
   let x, y, w, h, fill, stroke, blend, n;
 
-  const num = 200;
+  const num = 10;
   const degrees = -20;
 
   const rects = [];
@@ -32,7 +32,7 @@ const sketch = ({ context, width, height }) => {
     y: height * 0.58,
   };
 
-  let frecuency = 0.0002;
+  let frecuency = 0.002;
   let amplitude = 10;
   const numFrames = 100;
 
