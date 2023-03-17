@@ -9,8 +9,8 @@ const settings = {
 };
 
 const sketch = ({ width, height }) => {
-  const cols = 72;
-  const rows = 8;
+  const cols = 3;
+  const rows = 222;
   const numCells = cols * rows;
 
   // grid
@@ -20,17 +20,17 @@ const sketch = ({ width, height }) => {
   const cw = gw / cols;
   const ch = gh / rows;
   // margin
-  const mx = (width - gw) * 0.5;
+  const mx = (width - gw) * .5;
   const my = (height - gh) * 0.5;
 
   const points = [];
 
   let x, y, n, lineWidth, color;
-  let frecuency = 0.002;
-  let amplitude = 90;
+  let frecuency = 0.0025;
+  let amplitude = 70;
 
   const colors = colormap({
-    colormap: "salinity",
+    colormap: "velocity-green",
     nshades: amplitude,
   });
 
