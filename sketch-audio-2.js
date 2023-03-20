@@ -2,6 +2,9 @@ const canvasSketch = require("canvas-sketch");
 const math = require("canvas-sketch-util/math");
 const random = require("canvas-sketch-util/random");
 const eases = require("eases");
+const risoColors = require("riso-colors");
+const Color = require("canvas-sketch-util/color");
+const colormap = require("colormap");
 
 const settings = {
   dimensions: [1080, 1080],
@@ -9,20 +12,39 @@ const settings = {
 };
 let audio, audioContext, audioData, sourceNode, analyserNode;
 let manager, minDb, maxDb;
-const sketch = () => {
-  const numCircles = 12;
-  const numSlices = 3;
+
+const sketch = ({ context, width, height }) => {
+  const numCircles = 22;
+  const numSlices = 5;
   const slice = (Math.PI * 2) / numSlices;
-  const radius = 200;
+  const radius = 10;
 
   const bins = [];
   const lineWidths = [];
   const rotationOffsets = [];
 
   let lineWidth, bin, mapped, phi;
+  let amplitude = 9;
+
+  const colors = colormap({
+    colormap: "electric",
+    nshades: amplitude,
+  });
+
+  const rectColors = [random.pick(risoColors), random.pick(risoColors)];
+  const bgColor = colors[Math.floor(random.range(1, 9))]; //random.pick(rectColors).hex;
+
+  console.log(colors);
+  console.log(bgColor);
+  const mask = {
+    radius: width * 0.5,
+    sides: 120,
+    x: width * 0.5,
+    y: height * 0.58,
+  };
 
   for (let i = 0; i < numCircles * numSlices; i++) {
-    bin = random.rangeFloor(4, 64);
+    bin = random.rangeFloor(4, 128);
     bins.push(bin);
   }
 
@@ -34,12 +56,12 @@ const sketch = () => {
 
   for (let i = 0; i < numCircles; i++) {
     rotationOffsets.push(
-      random.range(Math.PI * -0.75, Math.PI * 0.5) - Math.PI * 0.25
+      random.range(Math.PI * -0.25, Math.PI * 0.5) - Math.PI * 0.25
     );
   }
 
   return ({ context, width, height }) => {
-    context.fillStyle = "#EEEAE0";
+    context.fillStyle = bgColor;
     context.fillRect(0, 0, width, height);
 
     if (!audioContext) return;
@@ -47,9 +69,16 @@ const sketch = () => {
 
     context.save();
     context.translate(width * 0.5, height * 0.5);
-    context.scale(1, -1);
+
+    // drawPoligon({ context, radius: mask.radius, sides: mask.sides });
+
+    context.scale(2, -11);
+
+    // context.clip();
 
     let cradius = radius;
+    fill = colors[Math.floor(random.range(1, 9))];
+    stroke = colors[Math.floor(random.range(1, 9))];
 
     for (let i = 0; i < numCircles; i++) {
       context.save();
@@ -69,6 +98,9 @@ const sketch = () => {
 
         context.beginPath();
         context.arc(0, 0, cradius, 0, phi);
+        context.strokeStyle = stroke;
+
+        context.fillStyle = colors[Math.floor(random.range(1, 9))];
         context.stroke();
       }
       cradius += lineWidths[i] * 0.5;
@@ -76,6 +108,23 @@ const sketch = () => {
       context.restore();
     }
     context.restore();
+
+    // polygon outline
+    // context.save();
+    // context.translate(width * 0.5, height * 0.6);
+    // context.lineWidth = 20;
+
+    // drawPoligon({
+    //   context,
+    //   radius: mask.radius,
+    //   sides: mask.sides,
+    // });
+
+    // context.globalCompositeOperation = "color-burn";
+    // context.strokeStyle = colors[Math.floor(random.range(1, 9))];
+    // context.stroke();
+
+    // context.restore();
   };
 };
 
@@ -129,3 +178,16 @@ const start = async () => {
   manager.pause;
 };
 start();
+
+const drawPoligon = ({ context, radius = 300, sides = 3 }) => {
+  const slice = (Math.PI * 2) / sides;
+
+  context.beginPath();
+  context.moveTo(0, -radius);
+
+  for (let i = 1; i < sides; i++) {
+    const theta = i * slice - Math.PI * 0.5;
+    context.lineTo(Math.cos(theta) * radius, Math.sin(theta) * radius);
+  }
+  context.closePath();
+};
